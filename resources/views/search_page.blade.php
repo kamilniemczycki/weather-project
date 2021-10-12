@@ -15,7 +15,7 @@
                                        type="text"
                                        class="form-control"
                                        name="location"
-                                       value="{{ $result->getCity() ?? '' }}" required autofocus>
+                                       value="{{ isset($result) ? ($result->getCity() ?? '') : '' }}" required autofocus>
                             </div>
                             <div class="col-md-2">
                                 <button id="show" type="submit" class="btn btn-primary">
@@ -25,10 +25,18 @@
                         </div>
                         @if(isset($result) && $result)
                         <div class="found">
-                            Country: {{ $result->getCountry() ?? 'undefined' }}
-                            City: {{ $result->getCity() ?? 'undefined' }}
-                            Weather: {{ $result->getWeatherDesc() ?? 'undefined' }}
-                            {{ $result->getTempC() ?? 'undefined' }} °C ({{ $result->getTempF() ?? 'undefined' }} °F)
+                            <h1>{{ $result->getCity() ?? 'undefined' }}</h1>
+                            <ul>
+                                <li>Country: {{ $result->getCountry() ?? 'undefined' }}</li>
+                                <li>Weather: {{ $result->getWeatherDesc() ?? 'undefined' }}</li>
+                                <li>{{ $result->getTempC() ?? 'undefined' }} °C ({{ $result->getTempF() ?? 'undefined' }} °F)</li>
+                            </ul>
+                            @if(\Illuminate\Support\Facades\Auth::check())
+                            <form action="{{ route('bookmark.update', ['slug' => $city]) }}" method="POST">
+                                @csrf
+                                <input type="submit" value="{{ $bookmark }}">
+                            </form>
+                            @endif
                         </div>
                         @endif
                     </div>
@@ -37,3 +45,7 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script src="{{ asset('js/search.js') }}"></script>
+@endpush
