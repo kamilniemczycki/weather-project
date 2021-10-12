@@ -23,6 +23,11 @@
                                 </button>
                             </div>
                         </div>
+                        @if (session('status'))
+                        <div class="alert alert-success">
+                            {{ session('status') }}
+                        </div>
+                        @endif
                         @if(isset($result) && $result)
                         <div class="found">
                             <h1>{{ $result->getCity() ?? 'undefined' }}</h1>
