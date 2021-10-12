@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\SearchController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BookmarkController;
 
 Route::name('search.')->group(function () {
     Route::get('/', [SearchController::class, 'index'])
@@ -13,7 +13,11 @@ Route::name('search.')->group(function () {
         ->name('show');
 });
 
-Route::get('/bookmark', [HomeController::class, 'index'])
-    ->name('bookmark');
+Route::name('bookmark.')->group(function () {
+    Route::get('/bookmark', [BookmarkController::class, 'index'])
+        ->name('index');
+    Route::post('/bookmark/{slug}', [BookmarkController::class, 'updateStatus'])
+        ->name('update');
+});
 
 Auth::routes();
