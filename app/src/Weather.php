@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\src;
 
 use App\Traits\Attribute;
 use App\Interfaces\Weather as WeatherInterface;

@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Exceptions\NotFoundLocation;
 use App\Interfaces\Weather;
 use App\Models\Bookmark;
-use App\Models\WeatherDownloader;
+use App\src\Downloader\WeatherDownloader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class BookmarkController extends Controller
 {
@@ -25,14 +29,16 @@ class BookmarkController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(WeatherDownloader $weatherDownloader)
     {
         $bookmarks = Bookmark::where('user_id', Auth::id())->get();
         $allBookmarks = [];
         foreach ($bookmarks as $bookmark) {
-            if ($weather = $this->getWeather($bookmark->location_slug)) {
-                $allBookmarks[] = $weather;
-            }
+            try {
+                if ($weather = $this->getWeather($weatherDownloader, $bookmark->location_slug)) {
+                    $allBookmarks[] = $weather;
+                }
+            } catch (NotFoundLocation $exception) {}
         }
 
         return view('bookmark', compact('allBookmarks'));
@@ -40,7 +46,9 @@ class BookmarkController extends Controller
 
     public function updateStatus(Request $request, string $slug)
     {
+        $slug = Str::slug($slug);
         $user = $request->user();
+
         $bookmark = Bookmark::where('location_slug', $slug)->where('user_id', $user->id)->first();
         if ($bookmark) {
             $bookmark->delete();
@@ -55,10 +63,11 @@ class BookmarkController extends Controller
             ->with('status', 'Update status for '. $slug);
     }
 
-    private function getWeather(string $slug): Weather
+    /**
+     * @throws \App\Exceptions\NotFoundLocation
+     */
+    private function getWeather(WeatherDownloader $weatherDownloader, string $slug): Weather
     {
-        $api = new WeatherDownloader();
-        $api->searchWeather($slug);
-        return $api->getWeather();
+        return $weatherDownloader->searchWeather($slug);
     }
 }
