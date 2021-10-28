@@ -15,7 +15,7 @@
                                        type="text"
                                        class="form-control"
                                        name="location"
-                                       value="{{ isset($result) ? ($result->getCity() ?? '') : '' }}" required autofocus>
+                                       value="{{ $city ?? '' }}" required autofocus>
                             </div>
                             <div class="col-md-2">
                                 <button id="show" type="submit" class="btn btn-primary">
@@ -38,7 +38,7 @@
                                 <li>{{ $result->getTempC() ?? 'undefined' }} °C ({{ $result->getTempF() ?? 'undefined' }} °F)</li>
                             </ul>
                             @endif
-                            @if(\Illuminate\Support\Facades\Auth::check())
+                            @if(\Illuminate\Support\Facades\Auth::check() && $bookmark)
                             <form action="{{ route('bookmark.update', ['slug' => $city]) }}" method="POST">
                                 @csrf
                                 <input type="submit" value="{{ $bookmark }}">

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\NotFoundLocation;
 use App\Interfaces\Downloader\WeatherDownloader;
 use App\src\Weather;
 use Illuminate\Console\Command;
@@ -40,22 +41,26 @@ class getWeather extends Command
      */
     public function handle(WeatherDownloader $api): int
     {
-        $weather = $this->getWeather($api);
-        print 'City: '. $weather->getCity() . PHP_EOL;
-        if($weather->getCountry()) {
+        try {
+            $weather = $this->getWeather($api);
+            print 'City: ' . $weather->getCity() . PHP_EOL;
             print 'Country: ' . $weather->getCountry() . PHP_EOL;
             print 'Weather: ' . $weather->getWeatherDesc() . PHP_EOL;
             print 'Temp: ' . $weather->getTempC() . ' °C (' . $weather->getTempF() . ' °F)' . PHP_EOL;
+        } catch (NotFoundLocation $e) {
+            print $e->getMessage();
         }
 
         return 0;
     }
 
+    /**
+     * @throws \App\Exceptions\NotFoundLocation
+     */
     private function getWeather(WeatherDownloader $api): Weather
     {
         $city = Str::slug($this->argument('city'));
-        $api->searchWeather($city);
 
-        return $api->getWeather();
+        return $api->searchWeather($city);
     }
 }
