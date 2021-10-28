@@ -17,25 +17,20 @@ abstract class WeatherParser implements InterfaceWeatherParser
 
     protected function setWeather(array $response): void
     {
-        if ($this->statusCode() === 200 && count($response) > 1) {
-            $weather = new Weather(...[
-                'city' => $this->unSlugCity($response['city']),
-                'country' => $response['nearest_area'][0]['country'][0]['value'],
-                'weatherDesc' => $response['current_condition'][0]['weatherDesc'][0]['value'],
-                'tempC' => $response['current_condition'][0]['temp_C'],
-                'tempF' => $response['current_condition'][0]['temp_F'],
-            ]);
+        $weather = new Weather(...[
+            'city' => $this->unSlugCity($response['city']),
+            'country' => $response['nearest_area'][0]['country'][0]['value'],
+            'weatherDesc' => $response['current_condition'][0]['weatherDesc'][0]['value'],
+            'tempC' => $response['current_condition'][0]['temp_C'],
+            'tempF' => $response['current_condition'][0]['temp_F'],
+        ]);
 
-            $this->weather = $weather;
-        } else {
-            $weather = new Weather('Not found');
-            $this->weather = $weather;
-        }
+        $this->weather = $weather;
     }
 
     abstract public function statusCode(): int;
 
-    private function unSlugCity(string $slugCity): string
+    public function unSlugCity(string $slugCity): string
     {
         $parsed = '';
         foreach (explode('-', $slugCity) as $word)
