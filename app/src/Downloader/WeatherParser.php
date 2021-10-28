@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Downloader;
+namespace App\src\Downloader;
 
 use App\Interfaces\Downloader\WeatherParser as InterfaceWeatherParser;
-use App\Models\Weather;
+use App\src\Weather;
 
 abstract class WeatherParser implements InterfaceWeatherParser
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Downloader;
+namespace App\src\Downloader;
 
 use App\Interfaces\Downloader\WeatherDownloader as InterfacesWeatherDownloader;
 use Illuminate\Support\Facades\Http;
