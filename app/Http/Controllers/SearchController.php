@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Exceptions\NotFoundLocation;
 use App\Interfaces\Downloader\WeatherDownloader;
-use App\Interfaces\Weather;
 use App\Models\Bookmark;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
