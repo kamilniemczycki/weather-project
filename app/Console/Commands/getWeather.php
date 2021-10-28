@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Weather;
-use App\Models\WeatherDownloader;
+use App\src\Downloader\WeatherDownloader;
+use App\src\Weather;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
@@ -38,22 +38,22 @@ class getWeather extends Command
      *
      * @return int
      */
-    public function handle(): int
+    public function handle(WeatherDownloader $api): int
     {
-        $weather = $this->getWeather();
+        $weather = $this->getWeather($api);
         print 'City: '. $weather->getCity() . PHP_EOL;
-        print 'Country: '. $weather->getCountry() . PHP_EOL;
-        print 'Weather: '. $weather->getWeatherDesc() . PHP_EOL;
-        print 'Temp: '. $weather->getTempC() .' °C ('. $weather->getTempF() .' °F)'. PHP_EOL;
+        if($weather->getCountry()) {
+            print 'Country: ' . $weather->getCountry() . PHP_EOL;
+            print 'Weather: ' . $weather->getWeatherDesc() . PHP_EOL;
+            print 'Temp: ' . $weather->getTempC() . ' °C (' . $weather->getTempF() . ' °F)' . PHP_EOL;
+        }
 
         return 0;
     }
 
-    private function getWeather(): Weather
+    private function getWeather(WeatherDownloader $api): Weather
     {
         $city = Str::slug($this->argument('city'));
-
-        $api = new WeatherDownloader();
         $api->searchWeather($city);
 
         return $api->getWeather();

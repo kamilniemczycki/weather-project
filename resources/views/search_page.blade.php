@@ -31,11 +31,13 @@
                         @if(isset($result) && $result)
                         <div class="found">
                             <h1>{{ $result->getCity() ?? 'undefined' }}</h1>
+                            @if($result->getCountry())
                             <ul>
                                 <li>Country: {{ $result->getCountry() ?? 'undefined' }}</li>
                                 <li>Weather: {{ $result->getWeatherDesc() ?? 'undefined' }}</li>
                                 <li>{{ $result->getTempC() ?? 'undefined' }} °C ({{ $result->getTempF() ?? 'undefined' }} °F)</li>
                             </ul>
+                            @endif
                             @if(\Illuminate\Support\Facades\Auth::check())
                             <form action="{{ route('bookmark.update', ['slug' => $city]) }}" method="POST">
                                 @csrf

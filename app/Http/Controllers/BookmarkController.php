@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Interfaces\Weather;
 use App\Models\Bookmark;
-use App\Models\WeatherDownloader;
+use App\src\Downloader\WeatherDownloader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bookmark;
-use App\Models\WeatherDownloader;
+use App\src\Downloader\WeatherDownloader;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -15,11 +15,10 @@ class SearchController extends Controller
         return view('search_page');
     }
 
-    public function show(string $city): View
+    public function show(string $city, WeatherDownloader $api): View
     {
         $city = Str::slug($city);
 
-        $api = new WeatherDownloader();
         $api->searchWeather($city);
         $result = $api->getWeather();
 
