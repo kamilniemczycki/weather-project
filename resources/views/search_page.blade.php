@@ -39,7 +39,7 @@
                             </ul>
                             @endif
                             @if(\Illuminate\Support\Facades\Auth::check() && $bookmark)
-                            <form action="{{ route('bookmark.update', ['slug' => $city]) }}" method="POST">
+                            <form action="{{ route('bookmark.update', ['slug' => Str::slug($city)]) }}" method="POST">
                                 @csrf
                                 <input type="submit" value="{{ $bookmark }}">
                             </form>
