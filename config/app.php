@@ -1,5 +1,7 @@
 <?php
 
+use App\Providers\WeatherAPIServiceProvider;
+
 return [
 
     /*
@@ -161,6 +163,9 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+
+        // Custom
+        WeatherAPIServiceProvider::class,
 
         /*
          * Package Service Providers...

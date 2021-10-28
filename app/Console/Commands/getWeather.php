@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\src\Downloader\WeatherDownloader;
+use App\Interfaces\Downloader\WeatherDownloader;
 use App\src\Weather;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;

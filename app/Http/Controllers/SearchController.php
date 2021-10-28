@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\Downloader\WeatherDownloader;
 use App\Models\Bookmark;
-use App\src\Downloader\WeatherDownloader;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
