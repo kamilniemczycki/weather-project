@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Downloader;
 
-use App\Interfaces\StatusCode;
+use App\Interfaces\Downloader\WeatherParser as InterfaceWeatherParser;
 use App\Models\Weather;
 
-abstract class WeatherParser implements StatusCode
+abstract class WeatherParser implements InterfaceWeatherParser
 {
     private ?Weather $weather = null;
 
@@ -15,7 +17,7 @@ abstract class WeatherParser implements StatusCode
 
     protected function setWeather(array $response): void
     {
-        if ($this->statusCode() === 200) {
+        if ($this->statusCode() === 200 && count($response) > 1) {
             $weather = new Weather(...[
                 'city' => $this->unSlugCity($response['city']),
                 'country' => $response['nearest_area'][0]['country'][0]['value'],
@@ -25,6 +27,9 @@ abstract class WeatherParser implements StatusCode
             ]);
 
             $this->weather = $weather;
+        } else {
+            $weather = new Weather('Not found');
+            $this->weather = $weather;
         }
     }
 
@@ -33,12 +38,9 @@ abstract class WeatherParser implements StatusCode
     private function unSlugCity(string $slugCity): string
     {
         $parsed = '';
-        $words = explode('-', $slugCity);
-        $wordsCount = count($words);
-        foreach ($words as $key => $word) {
-            $parsed .= ucfirst($word) . ($key !== $wordsCount-1 ? ' ' : '');
-        }
+        foreach (explode('-', $slugCity) as $word)
+            $parsed .= ucfirst($word) . ' ';
 
-        return $parsed;
+        return rtrim($parsed, " ");
     }
 }
