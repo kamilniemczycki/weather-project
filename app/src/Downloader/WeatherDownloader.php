@@ -7,6 +7,7 @@ namespace App\src\Downloader;
 use App\Exceptions\NotFoundLocation;
 use App\Interfaces\Downloader\WeatherDownloader as InterfacesWeatherDownloader;
 use App\Interfaces\Weather;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class WeatherDownloader extends WeatherParser implements InterfacesWeatherDownloader
@@ -16,8 +17,7 @@ class WeatherDownloader extends WeatherParser implements InterfacesWeatherDownlo
 
     public function searchWeather(string $city): Weather|null
     {
-        $response = Http::get(str_replace('{slug}', $city, self::URL));
-        $this->statusCode = $response->status();
+        $response = $this->downloadWithAPI($city);
         if($this->statusCode() !== 200 || ($responseJson = $response->json()) === null)
             throw new NotFoundLocation('The specified location was not found');
 
@@ -29,5 +29,12 @@ class WeatherDownloader extends WeatherParser implements InterfacesWeatherDownlo
     public function statusCode(): int
     {
         return $this->statusCode;
+    }
+
+    protected function downloadWithAPI(string $city): Response
+    {
+        $response = Http::get(str_replace('{slug}', $city, self::URL));
+        $this->statusCode = $response->status();
+        return $response;
     }
 }
