@@ -29,9 +29,9 @@ class BookmarkController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(WeatherDownloader $weatherDownloader)
+    public function index(Request $request, WeatherDownloader $weatherDownloader)
     {
-        $bookmarks = Bookmark::where('user_id', Auth::id())->get();
+        $bookmarks = $request->user()->bookmarks()->get();
         $allBookmarks = [];
         foreach ($bookmarks as $bookmark) {
             try {
