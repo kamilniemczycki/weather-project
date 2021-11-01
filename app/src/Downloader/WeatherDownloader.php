@@ -9,10 +9,10 @@ use App\Interfaces\Downloader\WeatherDownloader as InterfacesWeatherDownloader;
 use App\Interfaces\Weather;
 use Illuminate\Support\Facades\Http;
 
-final class WeatherDownloader extends WeatherParser implements InterfacesWeatherDownloader
+class WeatherDownloader extends WeatherParser implements InterfacesWeatherDownloader
 {
-    private const URL = 'https://wttr.in/{slug}?format=j1';
-    private ?int $statusCode = null;
+    protected const URL = 'https://wttr.in/{slug}?format=j1';
+    protected ?int $statusCode = null;
 
     public function searchWeather(string $city): Weather|null
     {
