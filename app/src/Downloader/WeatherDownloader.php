@@ -15,11 +15,19 @@ class WeatherDownloader extends WeatherParser implements InterfacesWeatherDownlo
     protected const URL = 'https://wttr.in/{slug}?format=j1';
     protected ?int $statusCode = null;
 
+    /**
+     * @param string $city
+     * @return Weather|null
+     * @throws NotFoundLocation
+     */
     public function searchWeather(string $city): Weather|null
     {
         $response = $this->downloadWithAPI($city);
-        if($this->statusCode() !== 200 || ($responseJson = $response->json()) === null)
-            throw new NotFoundLocation('The specified location was not found');
+        if(
+            $this->statusCode() !== 200 ||
+            ($responseJson = $response->json()) === null ||
+            $responseJson === []
+        ) throw new NotFoundLocation('The specified location was not found');
 
         $this->setWeather(array_merge($responseJson, ['city' => $city]));
 
