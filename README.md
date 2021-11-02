@@ -14,13 +14,18 @@ $ cp .env.example .env
 $ composer install
 ```
 
-### 3. Install frontend dependencies & build static frontend files:
+### 3. Application key generate
+```shell script
+$ php artisan key:generate
+```
+
+### 4. Install frontend dependencies & build static frontend files:
 ```
 $ npm install &&
   npm run dev
 ```
 
-### 4. Database migration:
+### 5. Database migration:
 Specify your database configuration in the .env file
 ```dotenv
 DB_CONNECTION=mysql
@@ -37,7 +42,7 @@ Finally, start data migration:
 $ php artisan migrate
 ```
 
-### 5. Launch the application:
+### 6. Launch the application:
 ```shell script
 $ php artisan serv
 ```
