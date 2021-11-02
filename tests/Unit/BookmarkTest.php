@@ -2,11 +2,14 @@
 
 namespace Tests\Unit;
 
+use App\Models\Bookmark;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class BookmarkTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * @return void
      */
@@ -25,10 +28,11 @@ class BookmarkTest extends TestCase
 
     public function test_add_bookmark()
     {
+        $this->refreshDatabase();
         /** @var User $user */
-        User::factory()->count(1)->make();
+        User::factory()->count(1)->create();
         $user = User::first();
-        $user->bookmarks()->make([
+        $user->bookmarks()->create([
             'location_slug' => 'legnica'
         ]);
 
@@ -38,14 +42,15 @@ class BookmarkTest extends TestCase
 
     public function test_remove_bookmark()
     {
+        $this->refreshDatabase();
         /** @var User $user */
-        User::factory()->count(1)->make();
+        User::factory()->count(1)->create();
         $user = User::first();
-        $user->bookmarks()->make([
+        $user->bookmarks()->create([
             'location_slug' => 'legnica'
         ]);
 
-        $bookmark = $user->bookmarks()->first();
+        $bookmark = Bookmark::first();
 
         $this->assertTrue($bookmark->delete());
     }
