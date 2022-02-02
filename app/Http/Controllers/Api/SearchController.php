@@ -4,27 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Exceptions\NotFoundLocation;
 use App\Http\Controllers\Controller;
-use App\Interfaces\Downloader\WeatherDownloader;
+use App\Http\Resources\WeatherResource;
+use App\Repository\Interfaces\WeatherAPI;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 
 class SearchController extends Controller
 {
-    public function show(string $city, WeatherDownloader $api): JsonResponse
+    public function show(string $city, WeatherAPI $api): JsonResponse
     {
         $city = Str::slug($city);
-
         try {
-            $api->searchWeather($city);
-            $result = $api->getWeather();
-            $data = (object)$result->getAll();
+            $result = new WeatherResource($api->find($city));
         } catch (NotFoundLocation $notfound) {
-            $data = (object)[
+            $result = (object)[
                 'message' => $notfound->getMessage()
             ];
             $statusCode = 404;
         }
 
-        return response()->json($data, $statusCode ?? 200);
+        return response()->json($result, $statusCode ?? 200);
     }
 }
