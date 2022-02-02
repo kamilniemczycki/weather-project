@@ -45,6 +45,7 @@ class getWeather extends Command
         try {
             $weather = $this->getWeather($api);
             print 'City: ' . $weather->city . PHP_EOL;
+            print 'City slug: ' . $weather->city_slug . PHP_EOL;
             print 'Country: ' . $weather->country . PHP_EOL;
             print 'Weather: ' . $weather->weather_desc . PHP_EOL;
             print 'Temp: ' . $weather->temp_c . ' °C (' . $weather->temp_f . ' °F)' . PHP_EOL;
