@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Exceptions\NotFoundLocation;
-use App\Interfaces\Weather;
 use App\Models\Bookmark;
-use App\src\Downloader\WeatherDownloader;
+use App\Models\Weather;
+use App\Repository\Interfaces\WeatherAPI;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class BookmarkController extends Controller
 {
@@ -27,15 +28,17 @@ class BookmarkController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @param Request $request
+     * @param WeatherAPI $api
+     * @return View
      */
-    public function index(Request $request, WeatherDownloader $weatherDownloader)
+    public function index(Request $request, WeatherAPI $api): View
     {
         $bookmarks = $request->user()->bookmarks()->get();
         $allBookmarks = [];
         foreach ($bookmarks as $bookmark) {
             try {
-                if ($weather = $this->getWeather($weatherDownloader, $bookmark->location_slug)) {
+                if ($weather = $this->getWeather($api, $bookmark->location_slug)) {
                     $allBookmarks[] = $weather;
                 }
             } catch (NotFoundLocation $exception) {}
@@ -44,16 +47,19 @@ class BookmarkController extends Controller
         return view('bookmark', compact('allBookmarks'));
     }
 
-    public function updateStatus(Request $request, string $slug)
+    public function updateStatus(Request $request, string $slug): RedirectResponse
     {
         $slug = Str::slug($slug);
         $user = $request->user();
 
-        $bookmark = Bookmark::where('location_slug', $slug)->where('user_id', $user->id)->first();
+        $bookmark = Bookmark::query()
+            ->where('location_slug', $slug)
+            ->where('user_id', $user->id)
+            ->first();
         if ($bookmark) {
             $bookmark->delete();
         } else {
-            Bookmark::create([
+            Bookmark::query()->create([
                 'location_slug' => $slug,
                 'user_id' => (int)$user->id
             ]);
@@ -64,10 +70,10 @@ class BookmarkController extends Controller
     }
 
     /**
-     * @throws \App\Exceptions\NotFoundLocation
+     * @throws NotFoundLocation
      */
-    private function getWeather(WeatherDownloader $weatherDownloader, string $slug): Weather
+    private function getWeather(WeatherAPI $api, string $slug): Weather
     {
-        return $weatherDownloader->searchWeather($slug);
+        return $api->find($slug);
     }
 }

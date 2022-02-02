@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Exceptions\NotFoundLocation;
-use App\Interfaces\Downloader\WeatherDownloader;
 use App\Models\Bookmark;
+use App\Models\Weather;
+use App\Repository\Interfaces\WeatherAPI;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -18,11 +19,11 @@ class SearchController extends Controller
         return view('search_page');
     }
 
-    public function show(string $city, WeatherDownloader $api): View
+    public function show(string $city, WeatherAPI $api): View
     {
         try {
             $city = Str::slug($city);
-            $result = $api->searchWeather($city);
+            $weather = $api->find($city);
 
             $bookmark = 'Add to bookmark';
             if (
@@ -33,16 +34,17 @@ class SearchController extends Controller
             }
         } catch (NotFoundLocation $e) {
             $bookmark = null;
-            $result = new \App\src\Weather($e->getMessage());
+            $weather = new Weather(['city' => $city]);
         }
 
-        $city = $api->unSlugCity($city);
-
-        return view('search_page', compact('bookmark', 'city', 'result'));
+        return view('search_page', compact('bookmark', 'weather'));
     }
 
     private function isBookMark(string $slugCity): bool
     {
-        return Bookmark::where('location_slug', $slugCity)->where('user_id', Auth::id())->first() instanceof Bookmark;
+        return Bookmark::query()
+                ->where('location_slug', $slugCity)
+                ->where('user_id', Auth::id())
+                ->first() instanceof Bookmark;
     }
 }

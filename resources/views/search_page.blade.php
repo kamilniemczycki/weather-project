@@ -15,7 +15,7 @@
                                        type="text"
                                        class="form-control"
                                        name="location"
-                                       value="{{ $city ?? '' }}" required autofocus>
+                                       value="{{ $weather->city ?? '' }}" required autofocus>
                             </div>
                             <div class="col-md-2">
                                 <button id="show" type="submit" class="btn btn-primary">
@@ -28,18 +28,20 @@
                             {{ session('status') }}
                         </div>
                         @endif
-                        @if(isset($result) && $result)
+                        @if(isset($weather) && $weather)
                         <div class="found">
-                            <h1>{{ $result->getCity() ?? 'undefined' }}</h1>
-                            @if($result->getCountry())
+                            <h1>{{ $weather->city ?? 'undefined' }}</h1>
+                            @if($weather->country)
                             <ul>
-                                <li>Country: {{ $result->getCountry() ?? 'undefined' }}</li>
-                                <li>Weather: {{ $result->getWeatherDesc() ?? 'undefined' }}</li>
-                                <li>{{ $result->getTempC() ?? 'undefined' }} °C ({{ $result->getTempF() ?? 'undefined' }} °F)</li>
+                                <li>Country: {{ $weather->country ?? 'undefined' }}</li>
+                                <li>Weather: {{ $weather->weather_desc ?? 'undefined' }}</li>
+                                <li>{{ $weather->temp_c ?? 'undefined' }} °C ({{ $weather->temp_f ?? 'undefined' }} °F)</li>
                             </ul>
+                            @else
+                                Not found
                             @endif
                             @if(\Illuminate\Support\Facades\Auth::check() && $bookmark)
-                            <form action="{{ route('bookmark.update', ['slug' => Str::slug($city)]) }}" method="POST">
+                            <form action="{{ route('bookmark.update', ['slug' => Str::slug($weather->city_slug)]) }}" method="POST">
                                 @csrf
                                 <input type="submit" value="{{ $bookmark }}">
                             </form>
