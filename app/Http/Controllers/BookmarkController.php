@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Exceptions\NotFoundLocation;
-use App\Models\Bookmark;
-use App\Models\Weather;
+use App\Repository\Bookmark as BookmarkRepository;
 use App\Repository\Interfaces\WeatherAPI;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,13 +14,15 @@ use Illuminate\View\View;
 
 class BookmarkController extends Controller
 {
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct(
+        private BookmarkRepository $bookmark
+    ) {
         $this->middleware('auth');
     }
 
@@ -34,11 +35,10 @@ class BookmarkController extends Controller
      */
     public function index(Request $request, WeatherAPI $api): View
     {
-        $bookmarks = $request->user()->bookmarks()->get();
         $allBookmarks = [];
-        foreach ($bookmarks as $bookmark) {
+        foreach ($this->bookmark->allForUser($request->user()) as $bookmark) {
             try {
-                if ($weather = $this->getWeather($api, $bookmark->location_slug)) {
+                if ($weather = $api->find($bookmark->location_slug)) {
                     $allBookmarks[] = $weather;
                 }
             } catch (NotFoundLocation $exception) {}
@@ -47,33 +47,21 @@ class BookmarkController extends Controller
         return view('bookmark', compact('allBookmarks'));
     }
 
-    public function updateStatus(Request $request, string $slug): RedirectResponse
+    public function changeStatus(Request $request, string $slug): RedirectResponse
     {
         $slug = Str::slug($slug);
         $user = $request->user();
 
-        $bookmark = Bookmark::query()
-            ->where('location_slug', $slug)
-            ->where('user_id', $user->id)
-            ->first();
+        $bookmark = $this->bookmark->get($user, $slug);
         if ($bookmark) {
             $bookmark->delete();
         } else {
-            Bookmark::query()->create([
-                'location_slug' => $slug,
-                'user_id' => (int)$user->id
-            ]);
+            $this->bookmark->create($user, $slug);
         }
 
-        return redirect(route('search.show', ['city' => $slug]))
-            ->with('status', 'Update status for '. $slug);
+        return redirect(
+            route('search.show', ['city' => $slug])
+        )->with('status', 'Update status for '. $slug);
     }
 
-    /**
-     * @throws NotFoundLocation
-     */
-    private function getWeather(WeatherAPI $api, string $slug): Weather
-    {
-        return $api->find($slug);
-    }
 }

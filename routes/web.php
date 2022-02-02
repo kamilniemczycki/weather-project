@@ -16,7 +16,7 @@ Route::name('search.')->group(function () {
 Route::name('bookmark.')->group(function () {
     Route::get('/bookmark', [BookmarkController::class, 'index'])
         ->name('index');
-    Route::post('/bookmark/{slug}', [BookmarkController::class, 'updateStatus'])
+    Route::post('/bookmark/{slug}', [BookmarkController::class, 'changeStatus'])
         ->name('update');
 });
 
