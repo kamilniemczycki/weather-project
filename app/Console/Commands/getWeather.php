@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Exceptions\NotFoundLocation;
-use App\Interfaces\Downloader\WeatherDownloader;
-use App\src\Weather;
+use App\Models\Weather;
+use App\Repository\Interfaces\WeatherAPI;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
@@ -37,16 +37,17 @@ class getWeather extends Command
     /**
      * Execute the console command.
      *
+     * @param WeatherAPI $api
      * @return int
      */
-    public function handle(WeatherDownloader $api): int
+    public function handle(WeatherAPI $api): int
     {
         try {
             $weather = $this->getWeather($api);
-            print 'City: ' . $weather->getCity() . PHP_EOL;
-            print 'Country: ' . $weather->getCountry() . PHP_EOL;
-            print 'Weather: ' . $weather->getWeatherDesc() . PHP_EOL;
-            print 'Temp: ' . $weather->getTempC() . ' °C (' . $weather->getTempF() . ' °F)' . PHP_EOL;
+            print 'City: ' . $weather->city . PHP_EOL;
+            print 'Country: ' . $weather->country . PHP_EOL;
+            print 'Weather: ' . $weather->weather_desc . PHP_EOL;
+            print 'Temp: ' . $weather->temp_c . ' °C (' . $weather->temp_f . ' °F)' . PHP_EOL;
         } catch (NotFoundLocation $e) {
             print $e->getMessage();
         }
@@ -55,12 +56,14 @@ class getWeather extends Command
     }
 
     /**
-     * @throws \App\Exceptions\NotFoundLocation
+     * @param WeatherAPI $api
+     * @return Weather
+     * @throws NotFoundLocation
      */
-    private function getWeather(WeatherDownloader $api): Weather
+    private function getWeather(WeatherAPI $api): Weather
     {
         $city = Str::slug($this->argument('city'));
 
-        return $api->searchWeather($city);
+        return $api->find($city);
     }
 }
