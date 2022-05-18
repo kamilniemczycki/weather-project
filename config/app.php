@@ -1,6 +1,5 @@
 <?php
 
-use App\Providers\BookmarkServiceProvider;
 use App\Providers\WeatherAPIServiceProvider;
 
 return [
@@ -169,7 +168,6 @@ return [
          * Custom
          */
         WeatherAPIServiceProvider::class,
-        BookmarkServiceProvider::class,
 
         /*
          * Package Service Providers...
